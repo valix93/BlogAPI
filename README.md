@@ -35,7 +35,7 @@ e, se l'utente è registrato alla piattaforma, viene restituito il seguente ogge
 
 ```
 {
-    "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkZGludXp6byIsImV4cCI6MTYyMzI4OTI2MSwiaWF0IjoxNjIzMjgyMDYxfQ.Qha8WKBLDFyGY7Qwum7wcTJChZUIILluqie6u2UuUHO-WH4HXYcHF3qm5kryI-82xhZB55vOfvRCtytz9oYExw"
+    "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkZGludXp6byIsImV4cCI6MTYyMzI4OTI ..."
 }
 ```
 
