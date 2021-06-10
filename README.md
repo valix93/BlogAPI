@@ -22,7 +22,7 @@ Il progetto base mette a disposizione le seguenti API:
 * http://{hostname}:{port}/auth
 * http://{hostname}:{port}/register
 
-###### http://{hostname}:{port}/auth
+###### [POST] http://{hostname}:{port}/auth
 Questa API accetta in input un oggetto JSON nel seguente formato:
 
 ```
@@ -42,7 +42,7 @@ e, se l'utente è registrato alla piattaforma, viene restituito il seguente ogge
 contenente il token JWT da utilizzare per poter accedere alle risorse protette.
 
 
-###### http://{hostname}:{port}/auth
+###### [POST] http://{hostname}:{port}/register
 Questa API accetta in input un oggetto JSON nel seguente formato:
 
 ```
@@ -53,3 +53,9 @@ Questa API accetta in input un oggetto JSON nel seguente formato:
 ```
 
 e resituisce il nome dell'utente se la registrazione è andata a buon fine
+
+```
+{
+    "username": "ddinuzzo"
+}
+```
