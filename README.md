@@ -56,6 +56,6 @@ e resituisce il nome dell'utente se la registrazione è andata a buon fine
 
 ```
 {
-    "username": "ddinuzzo"
+    "username": "utente01"
 }
 ```
