@@ -21,7 +21,7 @@ public class BlogTagDetailsService implements TagDetailsService{
 	public Set<TagDTO> findAll() {
 		Iterable<Tag> tags = tagDao.findAll();
 		Set<TagDTO> listaTags = new HashSet<>();
-		for (Tag t : tags) {			
+		for (Tag t : tags) {		
 			TagDTO tagDTO = new TagDTO();
 			tagDTO.setTitolo(t.getTitolo());
 			listaTags.add(tagDTO);
