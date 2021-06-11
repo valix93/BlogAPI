@@ -25,14 +25,32 @@ public class ArticoloApiController {
 	private BlogArticoloDetailsService service;
 
 	@RequestMapping(value = "/api/articolo", method = RequestMethod.GET)
-	public ResponseEntity<Set<ArticoloDTO>> find(){
+	public ResponseEntity<Set<ArticoloDTO>> find(@RequestHeader(required = false, value = "Authorization") String token){
 		ResponseEntity<Set<ArticoloDTO>> response;
 		Set<ArticoloDTO> articoli = service.findAll();
 		if (articoli==null || articoli.isEmpty()) {
 			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		else
+		else {
+			if(token != null && token.startsWith("Bearer")) {
+				token = token.replaceAll("Bearer ", "");
+				long idUtente = jwtUtil.getUserIdFromToken(token);
+				for (ArticoloDTO a : articoli) {
+					if (a.getAutore().getId()!=idUtente && a.getData_pubblicazione()==null) {
+						System.out.println(a.getAutore().getId() + " id Autore");
+						articoli.remove(a);
+					}
+				}
+			}
+			else {
+				for (ArticoloDTO a : articoli) {
+					if (a.getData_pubblicazione()==null) {
+						articoli.remove(a);
+					}
+				}
+			}
 			response = new ResponseEntity<>(articoli, HttpStatus.OK);
+		}
 		return response;
 	}
 	
