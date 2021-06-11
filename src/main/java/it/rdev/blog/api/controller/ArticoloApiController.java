@@ -55,11 +55,25 @@ public class ArticoloApiController {
 		return response;
 	}
 	
-	//TODO bozza come in /api/articolo per non registrati / non proprietari e id non esistente
 	@RequestMapping(value = "/api/articolo/{id:\\d+}")
-	public ResponseEntity<?> getArticoloById(@PathVariable final long id, @RequestHeader(required = false, value = "Authorization") String token) {
+	public ResponseEntity<?> getArticoloById(@PathVariable final long id, 
+			@RequestHeader(required = false, value = "Authorization") String token) {
 		ResponseEntity<ArticoloDTO> response;
 		ArticoloDTO articolo = service.findArticoloById(id);
+		if (articolo.getData_pubblicazione()==null) {
+			if(token != null && token.startsWith("Bearer")) {
+				token = token.replaceAll("Bearer ", "");
+				long idUtente = jwtUtil.getUserIdFromToken(token);
+				if (articolo.getAutore().getId()!=idUtente) {
+					articolo = null;
+				}
+			}
+			else {
+				response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				return response;
+			}
+
+		}
 		response = new ResponseEntity<>(articolo, HttpStatus.OK);
 		return response;
 	}
