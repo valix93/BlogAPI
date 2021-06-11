@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "tag")
 public class Tag {
@@ -20,6 +22,7 @@ public class Tag {
             joinColumns = {@JoinColumn(name = "id_articolo")},
             inverseJoinColumns = {@JoinColumn(name = "id_tag")}
     )
+    @JsonIgnore
     private Set<Articolo> articoli = new HashSet<>();
 	
 	public String getTitolo() {
