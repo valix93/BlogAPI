@@ -20,11 +20,14 @@ public class BlogTagDetailsService implements TagDetailsService{
 	@Override
 	public Set<TagDTO> findAll() {
 		Iterable<Tag> tags = tagDao.findAll();
-		Set<TagDTO> listaTags = new HashSet<>();
-		for (Tag t : tags) {		
-			TagDTO tagDTO = new TagDTO();
-			tagDTO.setTitolo(t.getTitolo());
-			listaTags.add(tagDTO);
+		Set<TagDTO> listaTags = null;
+		if (tags!=null) {
+			listaTags = new HashSet<>();
+			for (Tag t : tags) {	
+				TagDTO tagDTO = new TagDTO();
+				tagDTO.setTitolo(t.getTitolo());
+				listaTags.add(tagDTO);
+			}
 		}
 		return listaTags;
 	}

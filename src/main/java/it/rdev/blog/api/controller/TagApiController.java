@@ -23,7 +23,7 @@ public class TagApiController {
 	public ResponseEntity<Set<TagDTO>> find(){
 		ResponseEntity<Set<TagDTO>> response;
 		Set<TagDTO> tags = service.findAll();
-		if (tags.isEmpty()) {
+		if (tags==null || tags.isEmpty()) {
 			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		else

@@ -20,11 +20,14 @@ public class BlogCategoriaDetailsService implements CategoriaDetailsService {
 	@Override
 	public Set<CategoriaDTO> findAll() {
 		Iterable<Categoria> categorie = categoriaDao.findAll();
-		Set<CategoriaDTO> listaCategorie = new HashSet<>();
-		for (Categoria c : categorie) {
-			CategoriaDTO categoriaDTO = new CategoriaDTO();
-			categoriaDTO.setTitolo(c.getTitolo());
-			listaCategorie.add(categoriaDTO);
+		Set<CategoriaDTO> listaCategorie = null;
+		if (categorie!=null) {
+			listaCategorie = new HashSet<>();
+			for (Categoria c : categorie) {
+				CategoriaDTO categoriaDTO = new CategoriaDTO();
+				categoriaDTO.setTitolo(c.getTitolo());
+				listaCategorie.add(categoriaDTO);
+			}
 		}
 		return listaCategorie;
 	}

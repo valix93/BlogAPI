@@ -1,22 +1,39 @@
 package it.rdev.blog.api.controller;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.rdev.blog.api.config.JwtTokenUtil;
+import it.rdev.blog.api.controller.dto.ArticoloDTO;
+import it.rdev.blog.api.service.impl.BlogArticoloDetailsService;
 
 @RestController
 public class ArticoloApiController {
 	
 	@Autowired
 	private JwtTokenUtil jwtUtil;
+	
+	@Autowired
+	private BlogArticoloDetailsService service;
 
-	@GetMapping({ "/api/articolo" })
-	public String get() {
-		return "Risorsa Accesibile";
+	@RequestMapping(value = "/api/articolo", method = RequestMethod.GET)
+	public ResponseEntity<Set<ArticoloDTO>> find(){
+		ResponseEntity<Set<ArticoloDTO>> response;
+		Set<ArticoloDTO> articoli = service.findAll();
+		if (articoli==null || articoli.isEmpty()) {
+			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		else
+			response = new ResponseEntity<>(articoli, HttpStatus.OK);
+		return response;
 	}
 	
 	@PostMapping({ "/api/articolo" })
