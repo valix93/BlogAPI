@@ -21,6 +21,14 @@ public class User {
 	private String password;
 	@OneToMany(mappedBy = "autore")
 	private Set<Articolo> articoli = new HashSet<>();
+	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public String getUsername() {
 		return username;
