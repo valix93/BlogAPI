@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 import it.rdev.blog.api.config.JwtTokenUtil;
 
 @RestController
-public class TestApiController {
+public class ArticoloApiController {
 	
 	@Autowired
 	private JwtTokenUtil jwtUtil;
 
-	@GetMapping({ "/api/test" })
+	@GetMapping({ "/api/articolo" })
 	public String get() {
 		return "Risorsa Accesibile";
 	}
 	
-	@PostMapping({ "/api/test" })
+	@PostMapping({ "/api/articolo" })
 	public String post(@RequestHeader(name = "Authorization") String token) {
 		String username = null;
 		if(token != null && token.startsWith("Bearer")) {

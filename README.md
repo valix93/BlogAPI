@@ -1,6 +1,8 @@
 # BlogAPI
 _Progetto di valutazione finale del corso Java base._
 
+[Link all'upstream README](https://github.com/valix93/BlogAPI/blob/main/origin_README.md)
+
 ## Panoramica
 Si ha l'esigenza di gestire un blog di articoli multiutente.
 Gli utenti registrati potranno scrivere in bozza, pubblicare, modificare e eliminare i propri articoli, la lettura è concessa a tutti, anche ad utenti non registrati.
@@ -9,8 +11,8 @@ Ad ogni articolo è associata una categoria ed una serie di tag.
 Si deve offrire anche un servizio di ricerca filtrata con possibilità d filtrare per i seguenti campi:
 - parola chiave che deve essere ricercata nel titolo, sottotitolo e nel testo dell'articolo;
 - categoria;
-- stato articolo
-- tags
+- stato articolo;
+- tags;
 - autore
 
 ## Specifiche
@@ -40,7 +42,7 @@ Si deve offrire anche un servizio di ricerca filtrata con possibilità d filtrar
 ## Specifiche dei servizi da implementare 
 #### Endpoint categorie
 ``
-path: /api/categorie
+path: /api/categoria
 ``
 ##### Recupero della lista di categorie
 
