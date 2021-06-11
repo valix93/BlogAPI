@@ -3,10 +3,13 @@ package it.rdev.blog.api.controller.dto;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import it.rdev.blog.api.dao.entity.Categoria;
 import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.dao.entity.User;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ArticoloDTO {
 	
 	private String titolo;

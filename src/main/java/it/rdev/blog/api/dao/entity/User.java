@@ -13,6 +13,7 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	private long id;
 	@Column
 	private String username;
@@ -20,6 +21,7 @@ public class User {
 	@JsonIgnore
 	private String password;
 	@OneToMany(mappedBy = "autore")
+	@JsonIgnore
 	private Set<Articolo> articoli = new HashSet<>();
 	
 	public long getId() {
