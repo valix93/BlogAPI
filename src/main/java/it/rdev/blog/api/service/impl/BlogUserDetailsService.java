@@ -1,4 +1,4 @@
-package it.rdev.blog.api.service;
+package it.rdev.blog.api.service.impl;
 
 import java.util.ArrayList;
 

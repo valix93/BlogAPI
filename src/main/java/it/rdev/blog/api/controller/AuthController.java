@@ -17,7 +17,7 @@ import it.rdev.blog.api.config.JwtTokenUtil;
 import it.rdev.blog.api.controller.dto.JwtRequest;
 import it.rdev.blog.api.controller.dto.JwtResponse;
 import it.rdev.blog.api.controller.dto.UserDTO;
-import it.rdev.blog.api.service.BlogUserDetailsService;
+import it.rdev.blog.api.service.impl.BlogUserDetailsService;
 
 @RestController
 @CrossOrigin

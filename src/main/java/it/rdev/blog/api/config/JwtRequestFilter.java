@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import it.rdev.blog.api.service.BlogUserDetailsService;
+import it.rdev.blog.api.service.impl.BlogUserDetailsService;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {

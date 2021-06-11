@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.rdev.blog.api.controller.dto.TagDTO;
-import it.rdev.blog.api.service.BlogTagDetailsService;
+import it.rdev.blog.api.service.impl.BlogTagDetailsService;
 
 @RestController
 public class TagApiController {

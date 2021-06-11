@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.rdev.blog.api.controller.dto.CategoriaDTO;
-import it.rdev.blog.api.service.BlogCategoriaDetailsService;
+import it.rdev.blog.api.service.impl.BlogCategoriaDetailsService;
 
 @RestController
 public class CategoriaApiController {
