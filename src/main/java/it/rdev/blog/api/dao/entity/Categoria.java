@@ -19,6 +19,7 @@ public class Categoria {
 	private String titolo;
 	
 	@OneToMany(mappedBy = "categoria")
+    @JsonIgnore
 	private Set<Articolo> articoli = new HashSet<>();
 
 	public String getTitolo() {

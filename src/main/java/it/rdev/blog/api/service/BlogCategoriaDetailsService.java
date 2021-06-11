@@ -27,5 +27,11 @@ public class BlogCategoriaDetailsService {
 		}
 		return listaCategorie;
 	}
+	
+	public Categoria save(CategoriaDTO categoria) {
+		Categoria newCategoria = new Categoria();
+		newCategoria.setTitolo(categoria.getTitolo());
+		return categoriaDao.save(newCategoria);
+	}
 
 }

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.rdev.blog.api.controller.dto.CategoriaDTO;
@@ -28,4 +31,8 @@ public class CategoriaApiController {
 		return response;
 	}
 	
+	@RequestMapping(value = "/api/categoria", method = RequestMethod.POST)
+	public ResponseEntity<?> saveCategoria(@RequestBody CategoriaDTO categoria) throws Exception {
+		return ResponseEntity.ok(service.save(categoria));
+	}
 }

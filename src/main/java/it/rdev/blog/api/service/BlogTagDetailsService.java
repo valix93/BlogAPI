@@ -7,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.rdev.blog.api.controller.dto.TagDTO;
-import it.rdev.blog.api.controller.dto.UserDTO;
 import it.rdev.blog.api.dao.TagDao;
 import it.rdev.blog.api.dao.entity.Tag;
-import it.rdev.blog.api.dao.entity.User;
 
 @Service
 public class BlogTagDetailsService {
