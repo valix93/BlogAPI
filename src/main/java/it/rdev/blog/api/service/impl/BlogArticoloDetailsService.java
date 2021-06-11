@@ -51,4 +51,19 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		return articoloDao.save(newArticolo);
 	}
 
+	@Override
+	public ArticoloDTO findArticoloById(long id) {
+		Articolo articolo = articoloDao.findById(id);
+		ArticoloDTO articoloDTO = new ArticoloDTO();
+		articoloDTO.setTitolo(articolo.getTitolo());
+		articoloDTO.setSottotitolo(articolo.getSottotitolo());
+		articoloDTO.setData_creazione(articolo.getData_creazione());
+		articoloDTO.setData_modifica(articolo.getData_modifica());
+		articoloDTO.setData_pubblicazione(articolo.getData_pubblicazione());
+		articoloDTO.setCategoria(articolo.getCategoria());
+		articoloDTO.setTags(articolo.getTags());
+		articoloDTO.setAutore(articolo.getAutore());
+		return articoloDTO;
+	}
+
 }

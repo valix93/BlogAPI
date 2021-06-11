@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +52,15 @@ public class ArticoloApiController {
 			}
 			response = new ResponseEntity<>(articoli, HttpStatus.OK);
 		}
+		return response;
+	}
+	
+	//TODO bozza come in /api/articolo per non registrati / non proprietari e id non esistente
+	@RequestMapping(value = "/api/articolo/{id:\\d+}")
+	public ResponseEntity<?> getArticoloById(@PathVariable final long id, @RequestHeader(required = false, value = "Authorization") String token) {
+		ResponseEntity<ArticoloDTO> response;
+		ArticoloDTO articolo = service.findArticoloById(id);
+		response = new ResponseEntity<>(articolo, HttpStatus.OK);
 		return response;
 	}
 	

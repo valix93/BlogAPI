@@ -10,5 +10,5 @@ import it.rdev.blog.api.dao.entity.Articolo;
 public interface ArticoloDao extends CrudRepository<Articolo, Integer> {
 	
 	Articolo findByTitolo(String titolo);
-	
+	Articolo findById(long id);
 }
