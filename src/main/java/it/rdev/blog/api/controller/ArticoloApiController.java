@@ -1,5 +1,6 @@
 package it.rdev.blog.api.controller;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.rdev.blog.api.config.JwtTokenUtil;
@@ -26,8 +28,13 @@ public class ArticoloApiController {
 	private BlogArticoloDetailsService service;
 
 	@RequestMapping(value = "/api/articolo", method = RequestMethod.GET)
-	public ResponseEntity<Set<ArticoloDTO>> find(@RequestHeader(required = false, value = "Authorization") String token){
+	public ResponseEntity<Set<ArticoloDTO>> find(
+			@RequestHeader(required = false, value = "Authorization") String token,
+			@RequestParam Map<String, String> req){
 		ResponseEntity<Set<ArticoloDTO>> response;
+		for (String  r : req.keySet()) {
+			System.out.println(req.get(r));
+		}
 		Set<ArticoloDTO> articoli = service.findAll();
 		if (articoli==null || articoli.isEmpty()) {
 			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
