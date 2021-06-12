@@ -20,7 +20,7 @@ import it.rdev.blog.api.service.impl.BlogArticoloDetailsService;
 
 @RestController
 public class ArticoloApiController {
-	
+
 	@Autowired
 	private JwtTokenUtil jwtUtil;
 	
@@ -32,10 +32,27 @@ public class ArticoloApiController {
 			@RequestHeader(required = false, value = "Authorization") String token,
 			@RequestParam Map<String, String> req){
 		ResponseEntity<Set<ArticoloDTO>> response;
-		for (String  r : req.keySet()) {
-			System.out.println(req.get(r));
+		Set<ArticoloDTO> articoli = null;
+		if (req!=null) {
+			for (String  r : req.keySet()) {
+				if (req.get(r).equals("testo")) {
+					articoli = service.findArticoloByTesto("prova");
+				}
+				if (req.get(r).equals("id")) {
+				//id, ,  o autore	
+				}
+				if (req.get(r).equals("categoria")) {
+				//id, categoria, tag o autore	
+				}
+				if (req.get(r).equals("id")) {
+				//id, categoria, tag o autore	
+				}
+				
+				System.out.println("request " + r);
+				System.out.println("request " + req.get(r));	
+			}
 		}
-		Set<ArticoloDTO> articoli = service.findAll();
+		articoli = service.findAll();
 		if (articoli==null || articoli.isEmpty()) {
 			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

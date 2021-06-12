@@ -9,4 +9,5 @@ public interface ArticoloDetailsService {
 	public Set<ArticoloDTO> findAll(); 
 	public Articolo save(ArticoloDTO articolo);
 	public ArticoloDTO findArticoloById(long id);
+	public Set<ArticoloDTO> findArticoloByTesto(String testo);
 }

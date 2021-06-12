@@ -66,4 +66,11 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		return articoloDTO;
 	}
 
+	@Override
+	public Set<ArticoloDTO> findArticoloByTesto(String testo) {
+		Set<Articolo> articolo = articoloDao.findByTesto(testo);
+		return null;
+	}
+
+
 }
