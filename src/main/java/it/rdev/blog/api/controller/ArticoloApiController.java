@@ -1,5 +1,6 @@
 package it.rdev.blog.api.controller;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,67 +15,68 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import it.rdev.blog.api.config.JwtTokenUtil;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
 import it.rdev.blog.api.service.impl.BlogArticoloDetailsService;
 
 @RestController
 public class ArticoloApiController {
-
+	
 	@Autowired
 	private JwtTokenUtil jwtUtil;
 	
 	@Autowired
 	private BlogArticoloDetailsService service;
 
+	// TODO migliorare questo metodo, favorire il riutilizzo del codice
 	@RequestMapping(value = "/api/articolo", method = RequestMethod.GET)
 	public ResponseEntity<Set<ArticoloDTO>> find(
 			@RequestHeader(required = false, value = "Authorization") String token,
-			@RequestParam Map<String, String> req){
-		ResponseEntity<Set<ArticoloDTO>> response;
+			@RequestParam(required = false) Map<String, String> req){
+		ResponseEntity<Set<ArticoloDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		Set<ArticoloDTO> articoli = null;
-		if (req!=null) {
-			for (String  r : req.keySet()) {
-				if (req.get(r).equals("testo")) {
-					articoli = service.findArticoloByTesto("prova");
-				}
-				if (req.get(r).equals("id")) {
-				//id, ,  o autore	
-				}
-				if (req.get(r).equals("categoria")) {
-				//id, categoria, tag o autore	
-				}
-				if (req.get(r).equals("id")) {
-				//id, categoria, tag o autore	
-				}
-				
-				System.out.println("request " + r);
-				System.out.println("request " + req.get(r));	
-			}
-		}
-		articoli = service.findAll();
-		if (articoli==null || articoli.isEmpty()) {
-			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		if (req==null || req.isEmpty()) {
+			articoli = service.findAll();
 		}
 		else {
+			for (String  r : req.keySet()) {
+				String testo = req.get(r);
+				if (r.equals("testo")) {
+					articoli = service.findArticoloByTesto(testo);
+				}
+				// TODO fare in and le altre operazioni
+				if (r.equals("id")) {
+					Integer id = Integer.parseInt(testo);
+					ArticoloDTO articolo = service.findArticoloById(id);
+					articoli.add(articolo);
+				}
+			}
+		}
+		if (articoli!=null && !articoli.isEmpty()) {
+			Iterator<ArticoloDTO> it = articoli.iterator();
 			if(token != null && token.startsWith("Bearer")) {
 				token = token.replaceAll("Bearer ", "");
 				long idUtente = jwtUtil.getUserIdFromToken(token);
-				for (ArticoloDTO a : articoli) {
+				while (it.hasNext()) {
+					ArticoloDTO a = it.next(); 
 					if (a.getAutore().getId()!=idUtente && a.getData_pubblicazione()==null) {
-						System.out.println(a.getAutore().getId() + " id Autore");
+					    it.remove(); // previene la ConcurrentModificationException
 						articoli.remove(a);
 					}
 				}
 			}
 			else {
-				for (ArticoloDTO a : articoli) {
-					if (a.getData_pubblicazione()==null) {
-						articoli.remove(a);
-					}
+				while (it.hasNext()) {
+				   ArticoloDTO a = it.next(); 
+				   if (a.getData_pubblicazione()==null) {
+					      it.remove(); // previene la ConcurrentModificationException
+					      articoli.remove(a);
+				   }
 				}
 			}
-			response = new ResponseEntity<>(articoli, HttpStatus.OK);
+			if (articoli!=null && !articoli.isEmpty()) response = new ResponseEntity<>(articoli, HttpStatus.OK);
+			else response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return response;
 	}

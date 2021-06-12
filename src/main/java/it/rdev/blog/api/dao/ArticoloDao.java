@@ -15,12 +15,9 @@ public interface ArticoloDao extends CrudRepository<Articolo, Integer> {
 	
 	Articolo findByTitolo(String titolo);
 	Articolo findById(long id);
-
-	@Query(value = "SELECT * FROM Articolo a WHERE a.titolo = :testo or a.sottotitolo = :testo or a.testo = :testo", 
-			  nativeQuery = true)
-	Set<Articolo> findByTesto(
-			  @Param("testo") String testo);
 	
-	//@Query("SELECT a From Articolo a where a.titolo like :testo OR a.sottotitolo like :testo OR a.testo like :testo")
-	//Set<Articolo> findByTesto(@Param("testo") String ricerca);
+	@Query(value = "SELECT * FROM Articolo a WHERE lower(a.titolo) like lower(:testo) or lower(a.sottotitolo) like lower(:testo) or lower(a.testo) like lower(:testo)", 
+			  nativeQuery = true)
+	Set<Articolo> findByTesto(@Param("testo") String testo);
+	
 }
