@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +44,12 @@ public class TagApiController {
 	 * Prende in input un tag in formato JSON compilato nel seguente modo {"titolo":"titolo01"} e lo salva nel db
 	 */
 	@RequestMapping(value = "/api/tag", method = RequestMethod.POST)
-	public ResponseEntity<?> saveTag(@RequestBody TagDTO tag) throws Exception {
-		return ResponseEntity.ok(service.save(tag));
+	public ResponseEntity<?> saveTag(@RequestBody TagDTO tag,
+			@RequestHeader(required = true, value = "Authorization") String token) throws Exception {
+		if(token != null && token.startsWith("Bearer")) {
+			return ResponseEntity.ok(service.save(tag));
+		}
+		// status code 401 se un utente non loggato prova ad inserire un nuovo tag nel db
+		return new ResponseEntity<>("Solo gli utenti loggati possono inserire novi tag",HttpStatus.UNAUTHORIZED);
 	}
 }

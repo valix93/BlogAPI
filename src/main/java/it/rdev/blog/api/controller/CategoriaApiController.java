@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +44,12 @@ public class CategoriaApiController {
 	 * Prende in input una categoria in formato JSON compilato nel seguente modo {"titolo":"titolo01"} e lo salva nel db
 	 */
 	@RequestMapping(value = "/api/categoria", method = RequestMethod.POST)
-	public ResponseEntity<?> saveCategoria(@RequestBody CategoriaDTO categoria) throws Exception {
-		return ResponseEntity.ok(service.save(categoria));
+	public ResponseEntity<?> saveCategoria(@RequestBody CategoriaDTO categoria,
+			@RequestHeader(required = true, value = "Authorization") String token) throws Exception {
+		if(token != null && token.startsWith("Bearer")) {
+			return ResponseEntity.ok(service.save(categoria));
+		}
+		// status code 401 se un utente non loggato prova ad inserire una nuova categoria nel db
+		return new ResponseEntity<>("Solo gli utenti loggati possono inserire nuove categorie",HttpStatus.UNAUTHORIZED);
 	}
 }
