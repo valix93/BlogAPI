@@ -19,18 +19,29 @@ public class TagApiController {
 	@Autowired
 	private BlogTagDetailsService service;
 
+	/*
+	 * Recupero tag lista di tags
+	 * GET /api/categoria
+	 * restituisce la lista di tags presenti nel database
+	 */
 	@RequestMapping(value = "/api/tag", method = RequestMethod.GET)
-	public ResponseEntity<Set<TagDTO>> find(){
-		ResponseEntity<Set<TagDTO>> response;
+	public ResponseEntity<?> find(){
+		ResponseEntity<?> response;
 		Set<TagDTO> tags = service.findAll();
 		if (tags==null || tags.isEmpty()) {
-			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+			// status code 404 se non è presente alcun tag all'interno del database
+			response = new ResponseEntity<>("Non è presente nessuna categoria all'interno del database!", HttpStatus.NOT_FOUND);		}
 		else
+			// status code 200 se sono state restituite delle categorie
 			response = new ResponseEntity<>(tags, HttpStatus.OK);
 		return response;
 	}
 	
+	/*
+	 * Inserimento di un tag nel database
+	 * POST /api/tag
+	 * Prende in input un tag in formato JSON compilato nel seguente modo {"titolo":"titolo01"} e lo salva nel db
+	 */
 	@RequestMapping(value = "/api/tag", method = RequestMethod.POST)
 	public ResponseEntity<?> saveTag(@RequestBody TagDTO tag) throws Exception {
 		return ResponseEntity.ok(service.save(tag));

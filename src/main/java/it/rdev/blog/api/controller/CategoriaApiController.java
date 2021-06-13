@@ -19,17 +19,29 @@ public class CategoriaApiController {
 	@Autowired
 	private BlogCategoriaDetailsService service;
 
+	/*
+	 * Recupero della lista di categorie
+	 * GET /api/categoria
+	 * restituisce la lista di categorie presenti nel database
+	 */
 	@RequestMapping(value = "/api/categoria", method = RequestMethod.GET)
-	public ResponseEntity<Set<CategoriaDTO>> find(){
-		ResponseEntity<Set<CategoriaDTO>> response;
+	public ResponseEntity<?> find(){
+		ResponseEntity<?> response;
 		Set<CategoriaDTO> categorie = service.findAll();
 		if (categorie.isEmpty())
-			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			// status code 404 se non è presente alcuna categoria all'interno del database
+			response = new ResponseEntity<>("Non è presente nessuna categoria all'interno del database!", HttpStatus.NOT_FOUND);
 		else
+			// status code 200 se sono state restituite delle categorie
 			response = new ResponseEntity<>(categorie, HttpStatus.OK);
 		return response;
 	}
 	
+	/*
+	 * Inserimento di una categoria nel database
+	 * POST /api/categoria
+	 * Prende in input una categoria in formato JSON compilato nel seguente modo {"titolo":"titolo01"} e lo salva nel db
+	 */
 	@RequestMapping(value = "/api/categoria", method = RequestMethod.POST)
 	public ResponseEntity<?> saveCategoria(@RequestBody CategoriaDTO categoria) throws Exception {
 		return ResponseEntity.ok(service.save(categoria));

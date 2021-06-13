@@ -90,6 +90,13 @@ public class ArticoloApiController {
 		return response;
 	}
 	
+	/*
+	 *  Eliminazione di un articolo
+	 *  DELETE /api/articolo/<:id>
+	 *  Il servizio elimina un articolo presente all'interno del db. 
+	 *  L'eliminazione è consentita solo all'autore dell'articolo dopo aver effettuato il login
+
+	 */
 	@RequestMapping(value = "/api/articolo/{id:\\d+}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteArticoloById (@PathVariable final long id,
 			@RequestHeader(required = true, value = "Authorization") String token) {
