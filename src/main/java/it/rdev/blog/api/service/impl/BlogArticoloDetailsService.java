@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
 import it.rdev.blog.api.dao.ArticoloDao;
 import it.rdev.blog.api.dao.entity.Articolo;
-import it.rdev.blog.api.dao.entity.Categoria;
-import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.dao.entity.User;
 import it.rdev.blog.api.service.ArticoloDetailsService;
 import it.rdev.blog.api.utility.ArticoloUtils;
@@ -77,6 +75,20 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		int cancellazione = articoloDao.deleteByIdAndAutore(id, user);
 		return cancellazione;
 		
+	}
+
+	public Articolo save(ArticoloDTO articolo, Long idUtente, String username) {
+		Articolo newArticolo = new Articolo();
+		User autore = new User();
+		autore.setId(idUtente);
+		autore.setUsername(username);
+		newArticolo.setTitolo(articolo.getTitolo());
+		newArticolo.setTitolo(articolo.getTitolo());
+		newArticolo.setSottotitolo(articolo.getSottotitolo());
+		//newArticolo.setCategoria(articolo.getCategoria());
+		//newArticolo.setTags(articolo.getTags());
+		newArticolo.setAutore(autore);
+		return articoloDao.save(newArticolo);
 	}
 
 

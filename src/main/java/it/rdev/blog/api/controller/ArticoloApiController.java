@@ -1,6 +1,5 @@
 package it.rdev.blog.api.controller;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,15 +8,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 
 import it.rdev.blog.api.config.JwtTokenUtil;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
+import it.rdev.blog.api.controller.dto.UserDTO;
 import it.rdev.blog.api.service.impl.BlogArticoloDetailsService;
 
 @RestController
@@ -91,11 +93,38 @@ public class ArticoloApiController {
 	}
 	
 	/*
+	 *  Inserimento di un articolo
+	 *  POST /api/articolo/
+	 *  Il servizio prende in input un articolo in formato JSON compilato in ogni sua parte ed indica all'utente l'avvenuto inserimento.
+	 *  L'articolo inserito è sempre in bozza, il passaggio in stato pubblicato è effettuato da un altro servizio.
+	 */
+	@RequestMapping(value = "/api/articolo", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public ResponseEntity<?> post (
+			@RequestHeader(required = true, value = "Authorization") String token,
+			@RequestBody ArticoloDTO articolo) {
+		
+		if(token != null && token.startsWith("Bearer")) {
+			token = token.replaceAll("Bearer ", "");
+			Long idUtente = jwtUtil.getUserIdFromToken(token);				
+			String username = jwtUtil.getUsernameFromToken(token);
+			UserDTO autore = new UserDTO();
+			autore.setId(idUtente.intValue());
+			autore.setUsername(username);
+			service.save(articolo,idUtente,username);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} 
+		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		
+	}
+	
+	
+	
+	/*
 	 *  Eliminazione di un articolo
 	 *  DELETE /api/articolo/<:id>
 	 *  Il servizio elimina un articolo presente all'interno del db. 
 	 *  L'eliminazione è consentita solo all'autore dell'articolo dopo aver effettuato il login
-
 	 */
 	@RequestMapping(value = "/api/articolo/{id:\\d+}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteArticoloById (@PathVariable final long id,
@@ -132,7 +161,7 @@ public class ArticoloApiController {
 		}
 	}
 	
-	@PostMapping({ "/api/articolo" })
+	/*@PostMapping({ "/api/articolo" })
 	public String post(@RequestHeader(name = "Authorization") String token) {
 		String username = null;
 		if(token != null && token.startsWith("Bearer")) {
@@ -141,5 +170,6 @@ public class ArticoloApiController {
 		}
 		return "Risorsa Protetta [" + username + "]";
 	}
+	*/
 
 }
