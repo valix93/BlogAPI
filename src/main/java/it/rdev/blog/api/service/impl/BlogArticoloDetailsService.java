@@ -1,5 +1,6 @@
 package it.rdev.blog.api.service.impl;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,9 @@ import org.springframework.stereotype.Service;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
 import it.rdev.blog.api.dao.ArticoloDao;
 import it.rdev.blog.api.dao.entity.Articolo;
+import it.rdev.blog.api.dao.entity.Categoria;
+import it.rdev.blog.api.dao.entity.Tag;
+import it.rdev.blog.api.dao.entity.User;
 import it.rdev.blog.api.service.ArticoloDetailsService;
 import it.rdev.blog.api.utility.ArticoloUtils;
 
@@ -48,6 +52,31 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		Set<Articolo> articoli = articoloDao.findByTesto(testo);
 		Set<ArticoloDTO> articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
 		return articoliDTO;
+	}
+
+	public Set<ArticoloDTO> findArticoloByIdCategoriaTagAutore(Map<String, String> req) {
+		Set<Articolo> articoli = null;
+		if (req.size()==1 && req.containsKey("testo")) {
+			String param = req.get("testo");
+			articoli = articoloDao.findByTesto(param);
+		}
+		else {
+			Map<String, String> params = ArticoloUtils.componiQuery(req);
+			long id = Integer.parseInt(params.get("id"));
+			String categoria = params.get("categoria");
+			String tag = params.get("tag");
+			String autore = params.get("autore");
+		}
+		Set<ArticoloDTO> articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
+		return articoliDTO;
+	}
+	
+	public int deleteArticoloByIdAutore(long id, long idAutore) {
+		User user = new User();
+		user.setId(idAutore);
+		int cancellazione = articoloDao.deleteByIdAndAutore(id, user);
+		return cancellazione;
+		
 	}
 
 

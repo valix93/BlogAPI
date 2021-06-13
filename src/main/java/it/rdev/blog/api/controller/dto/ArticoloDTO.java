@@ -12,6 +12,7 @@ import it.rdev.blog.api.dao.entity.User;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ArticoloDTO {
 	
+	private long id;
 	private String titolo;
 	private String sottotitolo;
 	private java.sql.Timestamp data_creazione;
@@ -21,6 +22,13 @@ public class ArticoloDTO {
     private User autore;
     private Set<Tag> tags = new HashSet<>();
     
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	public String getTitolo() {
 		return titolo;
 	}

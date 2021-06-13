@@ -31,77 +31,98 @@ public class ArticoloApiController {
 
 	// TODO migliorare questo metodo, favorire il riutilizzo del codice
 	@RequestMapping(value = "/api/articolo", method = RequestMethod.GET)
-	public ResponseEntity<Set<ArticoloDTO>> find(
+	public ResponseEntity<?> find(
 			@RequestHeader(required = false, value = "Authorization") String token,
 			@RequestParam(required = false) Map<String, String> req){
-		ResponseEntity<Set<ArticoloDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		Set<ArticoloDTO> articoli = null;
 		if (req==null || req.isEmpty()) {
 			articoli = service.findAll();
 		}
 		else {
+			//articoli = service.findArticoloByIdCategoriaTagAutore(req);
 			for (String  r : req.keySet()) {
-				String testo = req.get(r);
-				if (r.equals("testo")) {
-					articoli = service.findArticoloByTesto(testo);
+				if (r.equals("id") || r.equals("categoria") || r.equals("tag") || r.equals("testo")) {
+					String testo = req.get(r);
+					if (r.equals("testo")) {
+						articoli = service.findArticoloByTesto(testo);
+					}
 				}
-				// TODO fare in and le altre operazioni
-				if (r.equals("id")) {
-					Integer id = Integer.parseInt(testo);
-					ArticoloDTO articolo = service.findArticoloById(id);
-					articoli.add(articolo);
+				else {
+					// status code 400 se uno dei parametri passati in input non è formalmente corretto
+					return new ResponseEntity<>("Inserisci i parametri corretti nella richiesta", HttpStatus.BAD_REQUEST);
 				}
 			}
 		}
 		if (articoli!=null && !articoli.isEmpty()) {
-			Iterator<ArticoloDTO> it = articoli.iterator();
-			if(token != null && token.startsWith("Bearer")) {
-				token = token.replaceAll("Bearer ", "");
-				long idUtente = jwtUtil.getUserIdFromToken(token);
-				while (it.hasNext()) {
-					ArticoloDTO a = it.next(); 
-					if (a.getAutore().getId()!=idUtente && a.getData_pubblicazione()==null) {
-					    it.remove(); // previene la ConcurrentModificationException
-						articoli.remove(a);
-					}
-				}
-			}
-			else {
-				while (it.hasNext()) {
-				   ArticoloDTO a = it.next(); 
-				   if (a.getData_pubblicazione()==null) {
-					      it.remove(); // previene la ConcurrentModificationException
-					      articoli.remove(a);
-				   }
-				}
-			}
-			if (articoli!=null && !articoli.isEmpty()) response = new ResponseEntity<>(articoli, HttpStatus.OK);
-			else response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			// status code 200 se la ricerca produce risultati
+			return new ResponseEntity<>(articoli,HttpStatus.OK);
 		}
-		return response;
+		else {
+			// status code 404 se la ricerca non produce risultati
+			return new ResponseEntity<>("Nessun articolo disponibile", HttpStatus.NOT_FOUND);	
+		}			
 	}
 	
-	@RequestMapping(value = "/api/articolo/{id:\\d+}")
+	@RequestMapping(value = "/api/articolo/{id:\\d+}", method = RequestMethod.GET)
 	public ResponseEntity<?> getArticoloById(@PathVariable final long id, 
 			@RequestHeader(required = false, value = "Authorization") String token) {
 		ResponseEntity<ArticoloDTO> response;
 		ArticoloDTO articolo = service.findArticoloById(id);
-		if (articolo.getData_pubblicazione()==null) {
+		if (articolo!=null && articolo.getData_pubblicazione()==null) {
 			if(token != null && token.startsWith("Bearer")) {
 				token = token.replaceAll("Bearer ", "");
 				long idUtente = jwtUtil.getUserIdFromToken(token);
 				if (articolo.getAutore().getId()!=idUtente) {
-					articolo = null;
+					response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+					return response;
+				}
+			}
+		}
+		if (articolo==null) {
+			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		else if (articolo.getData_pubblicazione()==null){
+			response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		else {
+			response = new ResponseEntity<>(articolo, HttpStatus.OK);
+		}
+		return response;
+	}
+	
+	@RequestMapping(value = "/api/articolo/{id:\\d+}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteArticoloById (@PathVariable final long id,
+			@RequestHeader(required = true, value = "Authorization") String token) {
+		ArticoloDTO articolo = service.findArticoloById(id);
+		if (articolo==null) {
+			// 404 se l'id passato in input non è associato ad alcun articolo presente nel database
+			return new ResponseEntity<>("Articolo non presente!", HttpStatus.NOT_FOUND);
+		} else {
+			if(token != null && token.startsWith("Bearer")) {
+				token = token.replaceAll("Bearer ", "");
+				long idUtente = jwtUtil.getUserIdFromToken(token);
+				if (articolo.getAutore().getId() != idUtente) {
+					// status code 403 se un utente loggato che non è l'autore dell'articolo che cerca di eliminare
+					return new ResponseEntity<>("Non sei il creatore dell'articolo!", HttpStatus.FORBIDDEN);
+				}
+				else {
+					int ret = service.deleteArticoloByIdAutore(id, idUtente);
+					String msg = "Articolo con id " + id;
+					if (ret==1) {
+						// status code 204 se l'operazione di cancellazione va a buon fine
+						return new ResponseEntity<>(msg + " cancellato con successo!",HttpStatus.NO_CONTENT);
+					}
+					else {
+						// status code 500 se l'operazione di cancellazione fallisce
+						return new ResponseEntity<>(msg + " non cancellato!",HttpStatus.INTERNAL_SERVER_ERROR);
+					}
 				}
 			}
 			else {
-				response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-				return response;
+				// 401 se un utente non loggato prova ad effettuare l'eliminazione di un articolo
+				return new ResponseEntity<>("Devi essere un utente loggato per eliminare un articolo",HttpStatus.UNAUTHORIZED);
 			}
-
 		}
-		response = new ResponseEntity<>(articolo, HttpStatus.OK);
-		return response;
 	}
 	
 	@PostMapping({ "/api/articolo" })
