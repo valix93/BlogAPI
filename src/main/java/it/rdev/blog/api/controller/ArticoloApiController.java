@@ -73,11 +73,15 @@ public class ArticoloApiController {
 		if (articolo!=null && articolo.getData_pubblicazione()==null) {
 			if(token != null && token.startsWith("Bearer")) {
 				token = token.replaceAll("Bearer ", "");
+				// TODO token scaduto
 				long idUtente = jwtUtil.getUserIdFromToken(token);
 				if (articolo.getAutore().getId()!=idUtente) {
 					response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
-					return response;
 				}
+				else {
+					response = new ResponseEntity<>(articolo, HttpStatus.OK);
+				}
+				return response;
 			}
 		}
 		if (articolo==null) {
@@ -108,14 +112,58 @@ public class ArticoloApiController {
 			token = token.replaceAll("Bearer ", "");
 			Long idUtente = jwtUtil.getUserIdFromToken(token);				
 			String username = jwtUtil.getUsernameFromToken(token);
-			UserDTO autore = new UserDTO();
-			autore.setId(idUtente.intValue());
-			autore.setUsername(username);
-			service.save(articolo,idUtente,username);
+			service.saveOrUpdate(articolo);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} 
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		
+	}
+	
+	/*
+	 *  Modifica di un articolo
+	 *  POST /api/articolo/<:id>
+	 *  Il servizio permette l'update di un articolo passando in input un articolo in formato JSON. 
+	 *  L'aggiornamento è consentito solo all'autore dell'articolo dopo aver effettuato il login
+	 */
+	@RequestMapping(value = "/api/articolo/{id:\\d+}", method = RequestMethod.PUT)
+	public ResponseEntity<?> deleteArticoloById (@PathVariable final long id,
+			@RequestHeader(required = true, value = "Authorization") String token,
+			@RequestBody ArticoloDTO articoloInput) {
+		ArticoloDTO articolo = service.findArticoloById(id);
+		if (articolo==null) {
+			// 404 se l'id passato in input non è associato ad alcun articolo presente nel database
+			return new ResponseEntity<>("Articolo non presente!", HttpStatus.NOT_FOUND);
+		} else {
+			if(token != null && token.startsWith("Bearer")) {
+				token = token.replaceAll("Bearer ", "");
+				long idUtente = jwtUtil.getUserIdFromToken(token);
+				if (articolo.getAutore().getId() != idUtente) {
+					// status code 403 se un utente loggato che non è l'autore dell'articolo che cerca di eliminare
+					return new ResponseEntity<>("Non sei il creatore dell'articolo!", HttpStatus.FORBIDDEN);
+				}
+				else {
+					String titoloInput = articoloInput.getTitolo();
+					String sottotitoloInput = articoloInput.getSottotitolo();
+					java.sql.Timestamp dataPubblicazione = articoloInput.getData_pubblicazione();
+					if (titoloInput!=null && !titoloInput.isEmpty()) articolo.setTitolo(titoloInput);
+					if (sottotitoloInput!=null && !sottotitoloInput.isEmpty()) articolo.setSottotitolo(sottotitoloInput);
+					// TODO stato bozza o pubblicato
+					articolo = service.saveOrUpdate(articolo);
+					if (articolo!=null) {
+						// status code 204 se l'operazione di modifica va a buon fine
+						return new ResponseEntity<>("articolo modificato con successo!",HttpStatus.NO_CONTENT);
+					}
+					else {
+						// status code 500 se l'operazione di modifica fallisce
+						return new ResponseEntity<>("articolo non creato!",HttpStatus.INTERNAL_SERVER_ERROR);
+					}
+				}
+			}
+			else {
+				// 401 se un utente non loggato prova ad effettuare la modifica di un articolo
+				return new ResponseEntity<>("Devi essere un utente loggato per modificare un articolo",HttpStatus.UNAUTHORIZED);
+			}
+		}
 	}
 	
 	

@@ -29,12 +29,16 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 	@Override
 	public Articolo save(ArticoloDTO articolo) {
 		Articolo newArticolo = new Articolo();
+		User autore = new User();
+		autore.setId(articolo.getAutore().getId());
+		autore.setUsername(articolo.getAutore().getUsername());
+		newArticolo.setAutore(autore);
 		newArticolo.setTitolo(articolo.getTitolo());
 		newArticolo.setTitolo(articolo.getTitolo());
 		newArticolo.setSottotitolo(articolo.getSottotitolo());
-		newArticolo.setCategoria(articolo.getCategoria());
-		newArticolo.setTags(articolo.getTags());
-		newArticolo.setAutore(articolo.getAutore());
+		//newArticolo.setCategoria(articolo.getCategoria());
+		//newArticolo.setTags(articolo.getTags());
+		newArticolo.setAutore(autore);
 		return articoloDao.save(newArticolo);
 	}
 
@@ -77,19 +81,24 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		
 	}
 
-	public Articolo save(ArticoloDTO articolo, Long idUtente, String username) {
+	public ArticoloDTO saveOrUpdate(ArticoloDTO articolo) {
 		Articolo newArticolo = new Articolo();
 		User autore = new User();
-		autore.setId(idUtente);
-		autore.setUsername(username);
+		autore.setId(articolo.getAutore().getId());
+		autore.setUsername(articolo.getAutore().getUsername());
+		newArticolo.setAutore(autore);
 		newArticolo.setTitolo(articolo.getTitolo());
 		newArticolo.setTitolo(articolo.getTitolo());
 		newArticolo.setSottotitolo(articolo.getSottotitolo());
 		//newArticolo.setCategoria(articolo.getCategoria());
 		//newArticolo.setTags(articolo.getTags());
 		newArticolo.setAutore(autore);
-		return articoloDao.save(newArticolo);
+		articolo = ArticoloUtils.convertArticoloToArticoloDTO(articoloDao.save(newArticolo));
+		return articolo;
 	}
+
+
+
 
 
 }
