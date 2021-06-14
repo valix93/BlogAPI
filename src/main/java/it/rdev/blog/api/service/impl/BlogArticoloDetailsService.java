@@ -1,6 +1,5 @@
 package it.rdev.blog.api.service.impl;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,23 +63,6 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		Set<ArticoloDTO> articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
 		return articoliDTO;
 	}
-
-	public Set<ArticoloDTO> findArticoloByIdCategoriaTagAutore(Map<String, String> req) {
-		Set<Articolo> articoli = null;
-		if (req.size()==1 && req.containsKey("testo")) {
-			String param = req.get("testo");
-			articoli = articoloDao.findByTesto(param);
-		}
-		else {
-			Map<String, String> params = ArticoloUtils.componiQuery(req);
-			long id = Integer.parseInt(params.get("id"));
-			String categoria = params.get("categoria");
-			String tag = params.get("tag");
-			String autore = params.get("autore");
-		}
-		Set<ArticoloDTO> articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
-		return articoliDTO;
-	}
 	
 	public int deleteArticoloByIdAutore(long id, long idAutore) {
 		User user = new User();
@@ -105,27 +87,24 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		articolo = ArticoloUtils.convertArticoloToArticoloDTO(articoloDao.save(newArticolo));
 		return articolo;
 	}
-
-	public ArticoloDTO findArticoloByIdAndAutoreAndCategoria(Long id, String autore, String categoria) {
-		ArticoloDTO articoloDTO = null;
+	
+	public Set<ArticoloDTO> findArticoliByIdAndAutoreAndCategoria(Long id, String autore, String categoria) {
+		Set<ArticoloDTO> articoliDTO = null;
 		User autoreObj = new User();
 		Categoria categoriaObj = new Categoria();
 		categoriaObj = categoriaDao.findByTitolo(categoria);
 		Long idAutore = null;
 		Long idCategoria = null;
-		Long idTag = null;
+		//Long idTag = null;
 		autoreObj = userDao.findByUsername(autore);
 		if (autoreObj!=null) idAutore = autoreObj.getId();
 		if (categoriaObj!=null) idCategoria = categoriaObj.getId();
 		if (categoria!=null && categoriaObj==null) return null;
 		if (autore!=null && autoreObj==null) return null;
-		Articolo articolo = articoloDao.findArticoloByIdAndAutoreAndCategoria(id, idAutore, idCategoria);
-		articoloDTO = ArticoloUtils.convertArticoloToArticoloDTO(articolo);
-		return articoloDTO;
+		if (articoloDao.findById(id)==null) return null;
+		Set<Articolo> articoli = articoloDao.findArticoliByIdAndAutoreAndCategoria(id, idAutore, idCategoria);
+		articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
+		return articoliDTO;
 	}
-
-
-
-
 
 }

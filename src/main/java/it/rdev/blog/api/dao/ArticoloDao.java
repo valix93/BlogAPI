@@ -1,6 +1,5 @@
 package it.rdev.blog.api.dao;
 
-import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -12,8 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import it.rdev.blog.api.dao.entity.Articolo;
-import it.rdev.blog.api.dao.entity.Categoria;
-import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.dao.entity.User;
 
 
@@ -46,7 +43,7 @@ public interface ArticoloDao extends CrudRepository<Articolo, Integer> {
 	@Query(value = "SELECT * FROM Articolo a inner join Users u on a.autore = u.id inner join Categoria c on a.categoria = c.id "
 			+ "where a.id = :id OR :id IS NULL and a.autore = :autore OR :autore IS NULL and a.categoria = :categoria OR :categoria IS NULL", 
 			  nativeQuery = true)
-	Articolo findArticoloByIdAndAutoreAndCategoria(@Param("id") Long id, @Param("autore") Long autore, @Param("categoria") Long categoria);
+	Set<Articolo> findArticoliByIdAndAutoreAndCategoria(@Param("id") Long id, @Param("autore") Long autore, @Param("categoria") Long categoria);
 
 }
 
