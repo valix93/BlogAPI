@@ -42,17 +42,36 @@ public class ArticoloApiController {
 		}
 		else {
 			//articoli = service.findArticoloByIdCategoriaTagAutore(req);
+			Long id = null;
+			String autore = null;
+			String categoria = null;
 			for (String  r : req.keySet()) {
-				if (r.equals("id") || r.equals("categoria") || r.equals("tag") || r.equals("testo")) {
+				if (r.equals("id") || r.equals("categoria") || r.equals("tag") || r.equals("testo") || r.equals("autore")) {
 					String testo = req.get(r);
 					if (r.equals("testo")) {
-						articoli = service.findArticoloByTesto(testo);
+						if (testo.length()>2) articoli = service.findArticoloByTesto(testo);
+						else return new ResponseEntity<>("Inserisci almeno 3 caratteri come parametro della richiesta", HttpStatus.BAD_REQUEST);	
+					}
+					if (r.equals("id")) {
+						id = Long.parseLong(testo);
+					}
+					if (r.equals("autore")) {
+						autore = testo;
+
+					}
+					if (r.equals("categoria")) {
+						categoria = testo;
 					}
 				}
 				else {
 					// status code 400 se uno dei parametri passati in input non è formalmente corretto
 					return new ResponseEntity<>("Inserisci i parametri corretti nella richiesta", HttpStatus.BAD_REQUEST);
 				}
+			}
+			if (id!=null || autore!=null || categoria!=null) {
+				ArticoloDTO articolo = service.findArticoloByIdAndAutoreAndCategoria(id,autore,categoria);
+				if (articolo!=null) return new ResponseEntity<>(articolo,HttpStatus.OK);
+				else return new ResponseEntity<>("Nessun articolo disponibile", HttpStatus.NOT_FOUND);
 			}
 		}
 		if (articoli!=null && !articoli.isEmpty()) {

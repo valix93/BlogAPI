@@ -37,6 +37,16 @@ public interface ArticoloDao extends CrudRepository<Articolo, Integer> {
 			  nativeQuery = true)
 	int deleteByIdAndAutore(long idArticolo, User autore);
 	
+	@Query(value = "SELECT * FROM Articolo a inner join Users u on a.autore = u.id inner join Categoria c on a.categoria = c.id inner join ArticoloTag arttag on a.id = arttag.id_articolo inner join Tag t on arttag.id_tag = t.id "
+			+ "where a.id = :id OR :id IS NULL and a.autore = :autore OR :autore IS NULL and a.categoria = :categoria OR :categoria IS NULL and t.id = :tag OR :tag IS NULL", 
+			  nativeQuery = true)
+	Articolo findArticoloByIdAndAutoreAndCategoriaAndTags(@Param("id") Long id, @Param("autore") Long autore, Long categoria, Long tag);
+
+	
+	@Query(value = "SELECT * FROM Articolo a inner join Users u on a.autore = u.id inner join Categoria c on a.categoria = c.id "
+			+ "where a.id = :id OR :id IS NULL and a.autore = :autore OR :autore IS NULL and a.categoria = :categoria OR :categoria IS NULL", 
+			  nativeQuery = true)
+	Articolo findArticoloByIdAndAutoreAndCategoria(@Param("id") Long id, @Param("autore") Long autore, @Param("categoria") Long categoria);
 
 }
 
