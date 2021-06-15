@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
 import it.rdev.blog.api.dao.ArticoloDao;
 import it.rdev.blog.api.dao.CategoriaDao;
+import it.rdev.blog.api.dao.TagDao;
 import it.rdev.blog.api.dao.UserDao;
 import it.rdev.blog.api.dao.entity.Articolo;
 import it.rdev.blog.api.dao.entity.Categoria;
+import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.dao.entity.User;
 import it.rdev.blog.api.service.ArticoloDetailsService;
 import it.rdev.blog.api.utility.ArticoloUtils;
@@ -26,6 +28,9 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 
 	@Autowired
 	private CategoriaDao categoriaDao;
+	
+	@Autowired
+	private TagDao tagDao;
 	
 	@Override
 	public Set<ArticoloDTO> findAll() {
@@ -92,17 +97,18 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		Set<ArticoloDTO> articoliDTO = null;
 		User autoreObj = new User();
 		Categoria categoriaObj = new Categoria();
-		categoriaObj = categoriaDao.findByTitolo(categoria);
 		Long idAutore = null;
 		Long idCategoria = null;
 		//Long idTag = null;
+		categoriaObj = categoriaDao.findByTitolo(categoria);
 		autoreObj = userDao.findByUsername(autore);
 		if (autoreObj!=null) idAutore = autoreObj.getId();
 		if (categoriaObj!=null) idCategoria = categoriaObj.getId();
+		//if (tagObj!=null) idTag = tagObj.getId();
 		if (categoria!=null && categoriaObj==null) return null;
 		if (autore!=null && autoreObj==null) return null;
 		if (articoloDao.findById(id)==null) return null;
-		Set<Articolo> articoli = articoloDao.findArticoliByIdAndAutoreAndCategoria(id, idAutore, idCategoria);
+		Set<Articolo> articoli = articoloDao.findArticoliByParams(id, idAutore, idCategoria);
 		articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
 		return articoliDTO;
 	}

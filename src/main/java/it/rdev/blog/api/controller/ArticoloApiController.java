@@ -43,6 +43,7 @@ public class ArticoloApiController {
 			Long id = null;
 			String autore = null;
 			String categoria = null;
+			String tag = null;
 			for (String  r : req.keySet()) {
 				if (r.equals("id") || r.equals("categoria") || r.equals("tag") || r.equals("testo") || r.equals("autore")) {
 					String testo = req.get(r);
@@ -59,6 +60,9 @@ public class ArticoloApiController {
 					}
 					if (r.equals("categoria")) {
 						categoria = testo;
+					}
+					if (r.equals("tag")) {
+						tag = testo;
 					}
 				}
 				else {
