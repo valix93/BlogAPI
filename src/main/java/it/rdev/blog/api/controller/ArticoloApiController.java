@@ -211,9 +211,9 @@ public class ArticoloApiController {
 	 */
 	@RequestMapping(value = "/api/articolo/{id:\\d+}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteArticoloById (@PathVariable final long id,
-			@RequestHeader(required = true, value = "Authorization") String token) {
+			@RequestHeader(required = false, value = "Authorization") String token) {
 		ArticoloDTO articolo = service.findArticoloById(id);
-		if (articolo==null || articolo.getTitolo().isEmpty()) {
+		if (token==null || articolo==null || articolo.getTitolo().isEmpty()) {
 			// 404 se l'id passato in input non è associato ad alcun articolo presente nel database
 			return new ResponseEntity<>("Articolo non presente!", HttpStatus.NOT_FOUND);
 		} 
@@ -244,16 +244,5 @@ public class ArticoloApiController {
 			}
 		}
 	}
-	
-	/*@PostMapping({ "/api/articolo" })
-	public String post(@RequestHeader(name = "Authorization") String token) {
-		String username = null;
-		if(token != null && token.startsWith("Bearer")) {
-			token = token.replaceAll("Bearer ", "");
-			username = jwtUtil.getUsernameFromToken(token);
-		}
-		return "Risorsa Protetta [" + username + "]";
-	}
-	*/
 
 }
