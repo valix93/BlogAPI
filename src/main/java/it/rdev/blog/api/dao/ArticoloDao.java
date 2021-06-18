@@ -24,26 +24,16 @@ public interface ArticoloDao extends CrudRepository<Articolo, Integer> {
 			  nativeQuery = true)
 	Set<Articolo> findByTesto(@Param("testo") String testo);
 	
-	@Query(value = "SELECT * FROM articolo a inner join users u on a.autore = u.id and u.username LIKE :autore OR :autore IS NULL inner join categoria c on a.categoria = c.id and c.titolo LIKE :categoria OR :id IS NULL inner join articolotag at on a.id = at.id_articolo inner join tag t on t.id = at.id_tag and t.titolo LIKE :tag OR :tag IS NULL where a.id = :id OR :id IS NULL", 
-			  nativeQuery = true)
-	Set<Articolo> findByIdAndCategoriaAndTagAndAutore(long id, String categoria, String tag, String autore);
-	
 	@Transactional
 	@Modifying
 	@Query(value="DELETE FROM Articolo a WHERE a.id = :idArticolo and a.autore = :autore",
 			  nativeQuery = true)
 	int deleteByIdAndAutore(long idArticolo, User autore);
 	
-	@Query(value = "SELECT * FROM Articolo a inner join Users u on a.autore = u.id inner join Categoria c on a.categoria = c.id inner join ArticoloTag arttag on a.id = arttag.id_articolo inner join Tag t on arttag.id_tag = t.id "
-			+ "where a.id = :id OR :id IS NULL and a.autore = :autore OR :autore IS NULL and a.categoria = :categoria OR :categoria IS NULL and t.id = :tag OR :tag IS NULL", 
+	@Query(value = "SELECT * FROM Articolo a inner join ArticoloTag artag on a.id = artag.id_articolo inner join Tag t on artag.id_tag = t.id where a.id = :id OR :id IS NULL and a.autore = :autore OR :autore IS NULL and a.categoria = :categoria OR :categoria IS NULL"
+			+ " and t.id = :tag OR :tag IS NULL", 
 			  nativeQuery = true)
-	Articolo findArticoloByIdAndAutoreAndCategoriaAndTags(@Param("id") Long id, @Param("autore") Long autore, Long categoria, Long tag);
-
-	
-	@Query(value = "SELECT * FROM Articolo a inner join Users u on a.autore = u.id inner join Categoria c on a.categoria = c.id "
-			+ "where a.id = :id OR :id IS NULL and a.autore = :autore OR :autore IS NULL and a.categoria = :categoria OR :categoria IS NULL", 
-			  nativeQuery = true)
-	Set<Articolo> findArticoliByIdAndAutoreAndCategoria(@Param("id") Long id, @Param("autore") Long autore, @Param("categoria") Long categoria);
+	Set<Articolo> findArticoloByIdAndAutoreAndCategoriaAndTags(@Param("id") Long id, @Param("autore") Long autore, Long categoria, Long tag);
 
 	@Query(value = "SELECT * FROM Articolo a where a.id = :id OR :id IS NULL and a.autore = :autore OR :autore IS NULL and a.categoria = :categoria OR :categoria IS NULL", 
 			  nativeQuery = true)

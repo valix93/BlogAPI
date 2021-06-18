@@ -16,13 +16,10 @@ public class Tag {
 	private long id;
 	@Column
 	private String titolo;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "articolotag",
-            joinColumns = {@JoinColumn(name = "id_articolo")},
-            inverseJoinColumns = {@JoinColumn(name = "id_tag")}
-    )
-    @JsonIgnore
+	@ManyToMany
+	@JoinTable(name="articolotag",
+				joinColumns = @JoinColumn(name="id_articolo"),
+				inverseJoinColumns =  @JoinColumn(name="id_tag") )
     private Set<Articolo> articoli = new HashSet<>();
 	
     

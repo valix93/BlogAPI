@@ -1,5 +1,6 @@
 package it.rdev.blog.api.service.impl;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,23 +94,38 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		return articolo;
 	}
 	
-	public Set<ArticoloDTO> findArticoliByIdAndAutoreAndCategoria(Long id, String autore, String categoria) {
+	public Set<ArticoloDTO> findArticoliByIdAndAutoreAndCategoria(Long id, String autore, String categoria, String tag) {
 		Set<ArticoloDTO> articoliDTO = null;
+		Set<Articolo> articoli = new HashSet<>();
 		User autoreObj = new User();
 		Categoria categoriaObj = new Categoria();
+		Tag tagObj = new Tag();
 		Long idAutore = null;
 		Long idCategoria = null;
-		//Long idTag = null;
+		Long idTag = null;
 		categoriaObj = categoriaDao.findByTitolo(categoria);
 		autoreObj = userDao.findByUsername(autore);
+		tagObj = tagDao.findByTitolo(tag);
 		if (autoreObj!=null) idAutore = autoreObj.getId();
 		if (categoriaObj!=null) idCategoria = categoriaObj.getId();
-		//if (tagObj!=null) idTag = tagObj.getId();
+		if (tagObj!=null) idTag = tagObj.getId();
 		if (categoria!=null && categoriaObj==null) return null;
 		if (autore!=null && autoreObj==null) return null;
-		if (articoloDao.findById(id)==null) return null;
-		Set<Articolo> articoli = articoloDao.findArticoliByParams(id, idAutore, idCategoria);
+		if (id!=null && articoloDao.findById(id)==null) return null;
+		if (tag!=null) {	 
+			if (tagObj==null)return null;
+				articoli = articoloDao.findArticoloByIdAndAutoreAndCategoriaAndTags(id, idAutore, idCategoria, idTag);
+
+		}
+		else {
+			articoli = articoloDao.findArticoliByParams(id, idAutore, idCategoria);
+
+		}
+		
+		//Set<Articolo> articoli = articoloDao.findByTag(id, idAutore, idCategoria, idTag);
+		//articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
 		articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
+	
 		return articoliDTO;
 	}
 

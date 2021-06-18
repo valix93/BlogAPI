@@ -70,8 +70,8 @@ public class ArticoloApiController {
 					return new ResponseEntity<>("Inserisci i parametri corretti nella richiesta", HttpStatus.BAD_REQUEST);
 				}
 			}
-			if (id!=null || autore!=null || categoria!=null) {
-				articoli = service.findArticoliByIdAndAutoreAndCategoria(id,autore,categoria);
+			if (id!=null || autore!=null || categoria!=null || tag!=null) {
+				articoli = service.findArticoliByIdAndAutoreAndCategoria(id,autore,categoria, tag);
 				if (articoli!=null) return new ResponseEntity<>(articoli,HttpStatus.OK);
 				else return new ResponseEntity<>("Nessun articolo disponibile", HttpStatus.NOT_FOUND);
 			}
