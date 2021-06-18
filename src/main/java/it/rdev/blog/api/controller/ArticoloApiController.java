@@ -35,11 +35,16 @@ public class ArticoloApiController {
 			@RequestHeader(required = false, value = "Authorization") String token,
 			@RequestParam(required = false) Map<String, String> req){
 		Set<ArticoloDTO> articoli = null;
+		Long idUtente = null;
+		if(token != null && token.startsWith("Bearer")) {
+			token = token.replaceAll("Bearer ", "");
+			// TODO token scaduto
+			idUtente = jwtUtil.getUserIdFromToken(token);
+		}
 		if (req==null || req.isEmpty()) {
 			articoli = service.findAll();
 		}
 		else {
-			//articoli = service.findArticoloByIdCategoriaTagAutore(req);
 			Long id = null;
 			String autore = null;
 			String categoria = null;
@@ -72,10 +77,20 @@ public class ArticoloApiController {
 			}
 			if (id!=null || autore!=null || categoria!=null || tag!=null) {
 				articoli = service.findArticoliByIdAndAutoreAndCategoria(id,autore,categoria, tag);
-				if (articoli!=null) return new ResponseEntity<>(articoli,HttpStatus.OK);
-				else return new ResponseEntity<>("Nessun articolo disponibile", HttpStatus.NOT_FOUND);
 			}
 		}
+		if (articoli!=null && !articoli.isEmpty()) {
+			int articoliSize = articoli.size();
+			for (int i=0; i<articoliSize;i++) {
+				ArticoloDTO a = articoli.iterator().next();
+				if (a.getData_pubblicazione()==null) {
+					if (idUtente==null || a.getAutore().getId()!=idUtente) {
+						articoli.remove(a);
+					}
+				}
+			}
+		}
+				
 		if (articoli!=null && !articoli.isEmpty()) {
 			// status code 200 se la ricerca produce risultati
 			return new ResponseEntity<>(articoli,HttpStatus.OK);
@@ -89,7 +104,7 @@ public class ArticoloApiController {
 	@RequestMapping(value = "/api/articolo/{id:\\d+}", method = RequestMethod.GET)
 	public ResponseEntity<?> getArticoloById(@PathVariable final long id, 
 			@RequestHeader(required = false, value = "Authorization") String token) {
-		ResponseEntity<ArticoloDTO> response;
+		ResponseEntity<?> response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		ArticoloDTO articolo = service.findArticoloById(id);
 		if (articolo!=null && articolo.getData_pubblicazione()==null) {
 			if(token != null && token.startsWith("Bearer")) {
@@ -97,7 +112,7 @@ public class ArticoloApiController {
 				// TODO token scaduto
 				long idUtente = jwtUtil.getUserIdFromToken(token);
 				if (articolo.getAutore().getId()!=idUtente) {
-					response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+					response = new ResponseEntity<>("Nessun articolo disponibile", HttpStatus.NOT_FOUND);
 				}
 				else {
 					response = new ResponseEntity<>(articolo, HttpStatus.OK);
@@ -105,12 +120,12 @@ public class ArticoloApiController {
 				return response;
 			}
 		}
-		if (articolo==null) {
-			response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		if (articolo==null || articolo.getData_pubblicazione()==null) {
+			response = new ResponseEntity<>("Nessun articolo disponibile", HttpStatus.NOT_FOUND);
 		}
-		else if (articolo.getData_pubblicazione()==null){
-			response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
+		//else if (articolo.getData_pubblicazione()==null){
+		//	response = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		//}
 		else {
 			response = new ResponseEntity<>(articolo, HttpStatus.OK);
 		}
@@ -198,10 +213,11 @@ public class ArticoloApiController {
 	public ResponseEntity<?> deleteArticoloById (@PathVariable final long id,
 			@RequestHeader(required = true, value = "Authorization") String token) {
 		ArticoloDTO articolo = service.findArticoloById(id);
-		if (articolo==null) {
+		if (articolo==null || articolo.getTitolo().isEmpty()) {
 			// 404 se l'id passato in input non è associato ad alcun articolo presente nel database
 			return new ResponseEntity<>("Articolo non presente!", HttpStatus.NOT_FOUND);
-		} else {
+		} 
+		else {
 			if(token != null && token.startsWith("Bearer")) {
 				token = token.replaceAll("Bearer ", "");
 				long idUtente = jwtUtil.getUserIdFromToken(token);

@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
@@ -87,8 +89,6 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		newArticolo.setTitolo(articolo.getTitolo());
 		newArticolo.setTitolo(articolo.getTitolo());
 		newArticolo.setSottotitolo(articolo.getSottotitolo());
-		//newArticolo.setCategoria(articolo.getCategoria());
-		//newArticolo.setTags(articolo.getTags());
 		newArticolo.setAutore(autore);
 		articolo = ArticoloUtils.convertArticoloToArticoloDTO(articoloDao.save(newArticolo));
 		return articolo;
@@ -111,19 +111,19 @@ public class BlogArticoloDetailsService implements ArticoloDetailsService {
 		if (tagObj!=null) idTag = tagObj.getId();
 		if (categoria!=null && categoriaObj==null) return null;
 		if (autore!=null && autoreObj==null) return null;
-		if (id!=null && articoloDao.findById(id)==null) return null;
-		if (tag!=null) {	 
+		if (id!=null) {
+			if (articoloDao.findById(id)==null) return null;
+			Articolo articolo = articoloDao.findArticoloByParams(id, idAutore, idCategoria);
+			articoli.add(articolo);
+		}
+		else if (tag!=null) {	 
 			if (tagObj==null)return null;
 				articoli = articoloDao.findArticoloByIdAndAutoreAndCategoriaAndTags(id, idAutore, idCategoria, idTag);
-
 		}
 		else {
 			articoli = articoloDao.findArticoliByParams(id, idAutore, idCategoria);
 
 		}
-		
-		//Set<Articolo> articoli = articoloDao.findByTag(id, idAutore, idCategoria, idTag);
-		//articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
 		articoliDTO = ArticoloUtils.convertiArticoliToArticoliDTO(articoli);
 	
 		return articoliDTO;

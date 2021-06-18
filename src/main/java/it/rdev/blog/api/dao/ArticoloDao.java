@@ -35,9 +35,13 @@ public interface ArticoloDao extends CrudRepository<Articolo, Integer> {
 			  nativeQuery = true)
 	Set<Articolo> findArticoloByIdAndAutoreAndCategoriaAndTags(@Param("id") Long id, @Param("autore") Long autore, Long categoria, Long tag);
 
-	@Query(value = "SELECT * FROM Articolo a where a.id = :id OR :id IS NULL and a.autore = :autore OR :autore IS NULL and a.categoria = :categoria OR :categoria IS NULL", 
+	@Query(value = "SELECT * FROM Articolo a where (:id IS NULL or a.id = :id) and (:autore IS NULL OR a.autore = :autore) and (:categoria IS NULL or a.categoria = :categoria)", 
 			  nativeQuery = true)
 	Set<Articolo> findArticoliByParams(@Param("id") Long id, @Param("autore") Long autore, @Param("categoria") Long categoria);
+
+	@Query(value = "SELECT * FROM Articolo a where a.id = :id and (:autore IS NULL OR a.autore = :autore) and (:categoria IS NULL or a.categoria = :categoria)", 
+			  nativeQuery = true)
+	Articolo findArticoloByParams(@Param("id") Long id, @Param("autore") Long autore, @Param("categoria") Long categoria);
 
 	
 }
